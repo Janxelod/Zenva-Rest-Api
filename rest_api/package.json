@@ -1,0 +1,35 @@
+{
+  "name": "t_api",
+  "version": "1.0.0",
+  "description": "Zenva REST Api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "nodemon": "SET PORT2=4000 && npx nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Janxelod/Zenva-Rest-Api.git"
+  },
+  "keywords": [
+    "Zenva",
+    "Rest",
+    "Api"
+  ],
+  "author": "Joan Odicio",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Janxelod/Zenva-Rest-Api/issues"
+  },
+  "homepage": "https://github.com/Janxelod/Zenva-Rest-Api#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0"
+  }
+}
