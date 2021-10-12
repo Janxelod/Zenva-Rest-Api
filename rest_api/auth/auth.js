@@ -1,22 +1,22 @@
 const passport = require('passport');
 const localStrategy = require('passport-local');
+const jwtStrategy = require('passport-jwt');
+
+const UserModel = require('../models/UserModel');
 
 // handle user registration
 passport.use('signup', new localStrategy.Strategy({
     usernameField: 'email',
     passwordField: 'password',
     passReqToCallback: true,
-}, (request, email, password, done) => {
+}, async(request, email, password, done) => {
+    try {
+        const { username } = request.body;
+        const user = await UserModel.create({ email, password, username});
 
-    // console.log(email, password);
-    // console.log(request.body);
-
-    const { username } = request.body;
-
-    if(username && username !== 'error') {
-        return done(null, {name: 'joe'});
-    } else {
-        return done(new Error('invalid user'));
+        return done(null, user);
+    } catch(error) {
+        return done(error);
     }
 }));
 
@@ -24,15 +24,39 @@ passport.use('signup', new localStrategy.Strategy({
 passport.use('login', new localStrategy.Strategy({
     usernameField: 'email',
     passwordField: 'password'
-}, (email, password, done) => {
+}, async(email, password, done) => {
+    try {
+        const user = await UserModel.findOne({email});
+        if(!user) {
+            return done(new Error('User not found'), false);
+        }
 
-    if(email !== 'joe@test.com') {
-        return done(new Error('User not found', false));
+        const valid = await user.isValidPassword(password);
+        if(!valid) {
+            return done(new Error('Invalid password'), false);
+        }
+
+        return done(null, user);
+    } catch(error) {
+        return done(error);
     }
+}));
 
-    if(password !== 'test') {
-        return done(new Error('Invalid password', false));
+// verify jwt token
+passport.use(new jwtStrategy.Strategy({
+    secretOrKey: process.env.JWT_SECRET,
+    jwtFromRequest: (request) => {
+        let token = null;
+        if(request && request.cookies) 
+        {
+            token = request.cookies.jwt;
+        }
+        return token;
     }
-
-    return done(null, {name: 'joe'});
+}, async(token, done) => {
+    try {
+        return done(null, token.user);
+    }catch(error) {
+        return done(error);
+    }
 }));
